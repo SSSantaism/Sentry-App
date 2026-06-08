@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface"
+    tools:context=".LogDeteksiActivity">
+
+    <!-- Top Navigation / AppBar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_top_nav"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:paddingHorizontal="16dp"
+        android:background="@color/surface_container"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_app_logo"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_lock_idle_lock"
+            app:tint="@color/primary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_app_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SENTRY"
+            android:textColor="@color/tertiary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed"
+            android:letterSpacing="0.2"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/iv_app_logo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:id="@+id/iv_sensors_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_info_details"
+            app:tint="@color/primary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Scrollable Main Content -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/cl_top_nav"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:clipToPadding="false"
+            android:paddingBottom="32dp">
+
+            <!-- Header Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Detection Logs"
+                android:textColor="@color/primary"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chronological event telemetry."
+                android:textColor="@color/on_surface_variant"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Filters -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp">
+                
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/chip_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TODAY"
+                        android:textColor="@color/on_primary"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="8dp"
+                        android:background="@drawable/bg_chip_selected"/>
+
+                    <TextView
+                        android:id="@+id/chip_this_week"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="THIS WEEK"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="8dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_chip_unselected"/>
+
+                    <LinearLayout
+                        android:id="@+id/chip_high_confidence"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginStart="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="6dp"
+                        android:background="@drawable/bg_chip_unselected">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/stat_notify_error"
+                            app:tint="@color/error"
+                            android:layout_marginEnd="6dp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="HIGH CONFIDENCE"
+                            android:textColor="@color/error"
+                            android:textSize="12sp"
+                            android:fontFamily="monospace"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Telemetry List -->
+            <!-- Log Entry: High Alert 1 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_log_critical_active"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/iv_icon_alert_1"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@android:drawable/ic_dialog_alert"
+                    app:tint="@color/error"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_tag_alert_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CRITICAL_EVENT"
+                    android:textColor="@color/error"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toEndOf="@id/iv_icon_alert_1"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_time_alert_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="14:23:05"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_title_alert_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Gunshot Signature Detected"
+                    android:textColor="@color/on_surface"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_tag_alert_1"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tag_alert_1"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_meta_alert_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_title_alert_1"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_alert_1">
+                    
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        app:tint="@color/on_surface_variant"
+                        android:layout_marginEnd="4dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sektor Utara - Blok B"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginEnd="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CONF_98%"
+                        android:textColor="@color/error"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:background="@drawable/bg_badge_error"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_view_details_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="VIEW DETAILS"
+                    android:textColor="@color/error"
+                    android:fontFamily="monospace"
+                    android:background="@drawable/bg_btn_view_details"
+                    app:backgroundTint="@null"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/ll_meta_alert_1"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Log Entry: Normal 1 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_glass_panel"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/iv_icon_normal_1"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"
+                    app:tint="@color/on_surface_variant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_tag_normal_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ACOUSTIC_ANOMALY"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toEndOf="@id/iv_icon_normal_1"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_time_normal_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="11:05:22"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_title_normal_1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Unidentified Mechanical Noise"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_tag_normal_1"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tag_normal_1"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_meta_normal_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_title_normal_1"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_normal_1">
+                    
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        app:tint="@color/on_surface_variant"
+                        android:layout_marginEnd="4dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sektor Timur - Trail 4"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginEnd="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CONF_62%"
+                        android:textColor="@color/tertiary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:background="@drawable/bg_badge_tertiary"/>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Log Entry: Normal 2 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_glass_panel"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/iv_icon_normal_2"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@android:drawable/ic_lock_silent_mode_off"
+                    app:tint="@color/on_surface_variant"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_tag_normal_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ACOUSTIC_ANOMALY"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toEndOf="@id/iv_icon_normal_2"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_time_normal_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="09:14:45"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_title_normal_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Heavy Vehicle Approaching"
+                    android:textColor="@color/on_surface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_tag_normal_2"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tag_normal_2"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_meta_normal_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_title_normal_2"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_normal_2">
+                    
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        app:tint="@color/on_surface_variant"
+                        android:layout_marginEnd="4dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Perimeter Road South"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginEnd="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CONF_75%"
+                        android:textColor="@color/tertiary"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:background="@drawable/bg_badge_tertiary"/>
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Log Entry: High Alert 2 (Reviewed) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_log_critical_reviewed"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
+
+                <ImageView
+                    android:id="@+id/iv_icon_alert_2"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@android:drawable/ic_dialog_alert"
+                    app:tint="@color/error"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_tag_alert_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CRITICAL_EVENT"
+                    android:textColor="@color/error"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:layout_marginStart="12dp"
+                    app:layout_constraintStart_toEndOf="@id/iv_icon_alert_2"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_time_alert_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="06:30:12"
+                    android:textColor="@color/on_surface_variant"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_title_alert_2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Gunshot Signature Detected"
+                    android:textColor="@color/on_surface"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="4dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_tag_alert_2"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tag_alert_2"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_meta_alert_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="@id/tv_title_alert_2"
+                    app:layout_constraintTop_toBottomOf="@id/tv_title_alert_2">
+                    
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        app:tint="@color/on_surface_variant"
+                        android:layout_marginEnd="4dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sektor Barat - Zona Konservasi"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace"
+                        android:layout_marginEnd="16dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CONF_91%"
+                        android:textColor="@color/error"
+                        android:textSize="10sp"
+                        android:fontFamily="monospace"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:background="@drawable/bg_badge_error"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_reviewed"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="REVIEWED"
+                    android:textColor="@color/on_surface"
+                    android:fontFamily="monospace"
+                    android:background="@drawable/bg_btn_reviewed"
+                    app:backgroundTint="@null"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toBottomOf="@id/ll_meta_alert_2"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Load Older Logs Button -->
+            <Button
+                android:id="@+id/btn_load_older_logs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LOAD OLDER LOGS"
+                android:textColor="@color/primary"
+                android:fontFamily="monospace"
+                android:background="@drawable/bg_chip_unselected"
+                app:backgroundTint="@null"
+                app:icon="@android:drawable/ic_popup_sync"
+                app:iconTint="@color/primary"
+                app:iconGravity="textStart"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
