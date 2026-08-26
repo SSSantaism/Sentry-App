@@ -176,7 +176,7 @@
                     android:id="@+id/tv_alert_location_sensor"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="SECTOR 7G • SENSOR_09"
+                    android:text="SECTOR ZERO • SENTRY"
                     android:textColor="@color/on_surface_variant"
                     android:textSize="11sp"
                     android:fontFamily="monospace"
@@ -276,37 +276,7 @@
 
                 </LinearLayout>
 
-                <!-- Button view map -->
-                <Button
-                    android:id="@+id/btn_view_map_gunshot"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="16dp"
-                    android:text="VIEW ON MAP"
-                    android:textColor="@color/error"
-                    android:textStyle="bold"
-                    android:fontFamily="monospace"
-                    android:background="@drawable/bg_button_alert"
-                    app:backgroundTint="@null"
-                    app:layout_constraintTop_toBottomOf="@id/ll_stats_row"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <!-- Custom Bioacoustic status orangutan label (snake_case) -->
-            <TextView
-                android:id="@+id/tv_status_orangutan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="ORANGUTAN ACTIVITY: NORMAL"
-                android:textColor="@color/secondary"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
-                app:layout_constraintTop_toBottomOf="@id/cl_alert_card_threat"
-                app:layout_constraintStart_toStartOf="parent"/>
 
             <!-- Recent Telemetry section header -->
             <LinearLayout
@@ -316,7 +286,7 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@id/tv_status_orangutan"
+                app:layout_constraintTop_toBottomOf="@id/cl_alert_card_threat"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <ImageView
@@ -415,7 +385,7 @@
                 android:textColor="@color/primary"
                 android:textStyle="bold"
                 android:fontFamily="monospace"
-                android:background="@drawable/bg_chip_unselected"
+                android:background="@drawable/bg_btn_secondary"
                 app:backgroundTint="@null"
                 app:icon="@android:drawable/ic_menu_recent_history"
                 app:iconTint="@color/primary"

@@ -3,6 +3,10 @@
 
     <!-- Tema utama SENTRY — berbasis Material3 dengan NoActionBar -->
     <style name="Theme.SENTRY" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Menyembunyikan status bar Android bawaan -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+
         <!-- Status bar & navigation bar menyatu dengan background gelap SENTRY -->
         <item name="android:statusBarColor">@color/surface</item>
         <item name="android:navigationBarColor">@color/surface</item>

@@ -26,6 +26,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.project.sentry.service.SentryListenerService;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
         // Minta izin notifikasi untuk Android 13+ (API 33)
         mintaIzinNotifikasi();
 
+        // Mulai Foreground Service untuk mendengarkan perubahan
+        // /gunshot_status di Realtime Database secara real-time
+        startSentryListenerService();
+
         // Inisialisasi komponen UI
         setupTelemetryRecyclerView();
         setupSimulationButton();
@@ -114,6 +120,24 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Izin POST_NOTIFICATIONS sudah diberikan.");
             }
         }
+    }
+
+    // ── Start Listener Service ───────────────────────────────────
+
+    /**
+     * Menjalankan SentryListenerService sebagai Foreground Service.
+     * Service ini akan mendengarkan perubahan /gunshot_status di
+     * Firebase Realtime Database. Ketika ESP32 mengubah status ke 1
+     * (bahaya terdeteksi), service langsung menampilkan notifikasi.
+     */
+    private void startSentryListenerService() {
+        Intent serviceIntent = new Intent(this, SentryListenerService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
+        }
+        Log.d(TAG, "✅ SentryListenerService dimulai.");
     }
 
     @Override
@@ -204,23 +228,23 @@ public class MainActivity extends AppCompatActivity {
         // Disable nested scrolling karena sudah di dalam ScrollView
         rvLogSuara.setNestedScrollingEnabled(false);
 
-        // Data dummy telemetri untuk demonstrasi
+        // Data dummy telemetri untuk demonstrasi (Sesuai request: Uptime, Batre, Signal)
         List<TelemetryEntry> dummyData = new ArrayList<>();
         dummyData.add(new TelemetryEntry(
-                "SYSTEM HEARTBEAT",
-                "All 12 sensor nodes responding",
-                "JUST NOW",
-                android.R.drawable.ic_menu_info_details));
+                "SYSTEM UPTIME",
+                "-",
+                "-",
+                android.R.drawable.ic_menu_recent_history));
         dummyData.add(new TelemetryEntry(
-                "ACOUSTIC BASELINE CALIBRATED",
-                "Ambient noise: 42dB — within normal range",
-                "5 MINS AGO",
-                android.R.drawable.ic_menu_compass));
+                "BATTERY STATUS",
+                "-",
+                "-",
+                android.R.drawable.ic_lock_idle_low_battery)); // Atau ikon baterai lain jika ada
         dummyData.add(new TelemetryEntry(
-                "SENSOR_09 BATTERY WARNING",
-                "Battery level: 15% — schedule replacement",
-                "23 MINS AGO",
-                android.R.drawable.stat_notify_error));
+                "SIGNAL STRENGTH",
+                "-",
+                "-",
+                android.R.drawable.presence_online));
 
         rvLogSuara.setAdapter(new TelemetryAdapter(dummyData));
     }
@@ -240,9 +264,9 @@ public class MainActivity extends AppCompatActivity {
             // Data simulasi yang realistis
             String waktuSimulasi = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                     Locale.getDefault()).format(new Date());
-            String lokasiSimulasi = "Sektor " + getRandomSector() + " — Sensor_"
-                    + String.format(Locale.getDefault(), "%02d", (int)(Math.random() * 12) + 1);
-            int akurasiSimulasi = 85 + (int)(Math.random() * 15); // 85-99%
+            String lokasiSimulasi = "SECTOR ZERO • SENTRY";
+            int akurasiSimulasi = 50 + (int)(Math.random() * 50); // 50-99%
+            String tipeSimulasi = akurasiSimulasi >= 85 ? "CRITICAL_EVENT" : "NOISE_ANOMALY";
 
             Log.d(TAG, "🔴 Memicu simulasi notifikasi #" + simulasiCounter +
                     " — Lokasi: " + lokasiSimulasi +
@@ -252,22 +276,21 @@ public class MainActivity extends AppCompatActivity {
             tampilkanNotifikasiSimulasi(waktuSimulasi,
                     String.valueOf(akurasiSimulasi), lokasiSimulasi);
 
-            Toast.makeText(this,
-                    "✅ Notifikasi simulasi #" + simulasiCounter + " dikirim!\n" +
-                    "Cek notification tray di perangkat.",
-                    Toast.LENGTH_SHORT).show();
-        });
-    }
+            // Simpan ke Firestore
+            com.google.firebase.firestore.FirebaseFirestore db = com.google.firebase.firestore.FirebaseFirestore.getInstance();
+            com.project.sentry.model.DetectionLog logBaru = new com.project.sentry.model.DetectionLog(
+                    null, waktuSimulasi, akurasiSimulasi, lokasiSimulasi, tipeSimulasi
+            );
 
-    /**
-     * Mengembalikan nama sektor acak untuk data simulasi.
-     */
-    private String getRandomSector() {
-        String[] sectors = {
-                "Utara - Blok B", "Timur - Trail 4", "Barat - Zona Konservasi",
-                "7G - Habitat Orangutan", "Selatan - Perimeter Road"
-        };
-        return sectors[(int)(Math.random() * sectors.length)];
+            db.collection("detection_logs").add(logBaru)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d(TAG, "Log berhasil ditulis ke Firestore dengan ID: " + documentReference.getId());
+                        Toast.makeText(this, "✅ Log tersimpan ke Firebase!", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Gagal menulis log ke Firestore", e);
+                    });
+        });
     }
 
     /**

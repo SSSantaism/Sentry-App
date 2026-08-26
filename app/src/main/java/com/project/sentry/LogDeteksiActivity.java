@@ -11,29 +11,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.project.sentry.adapter.LogAdapter;
 import com.project.sentry.model.DetectionLog;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Activity untuk menampilkan halaman Log Deteksi (Detection Logs).
  * <p>
- * Memuat layout {@code activity_log_deteksi.xml} yang berisi:
- * - Header "Detection Logs" dengan subtitle
- * - Filter chips (TODAY, THIS WEEK, HIGH CONFIDENCE)
- * - Daftar log deteksi statis (hardcoded di XML) + RecyclerView untuk data dinamis
- * - Tombol "LOAD OLDER LOGS"
- * </p>
- * <p>
- * Activity ini mendemonstrasikan bagaimana {@link LogAdapter} bekerja dengan
- * data {@link DetectionLog} dari berbagai sumber (dummy data, FCM push, Firestore).
+ * Menampilkan data secara real-time dari Firebase Cloud Firestore (koleksi "detection_logs").
  * </p>
  */
 public class LogDeteksiActivity extends AppCompatActivity {
 
     private static final String TAG = "LogDeteksiActivity";
 
-    // ── View References ──────────────────────────────────────────
+    // ── View & Adapter ──────────────────────────────────────────
+    private RecyclerView rvDetectionLogs;
     private LogAdapter logAdapter;
+    private List<DetectionLog> logList;
+
+    // ── Firebase ───────────────────────────────────────────────
+    private FirebaseFirestore db;
 
     // ── Lifecycle ────────────────────────────────────────────────
 
@@ -44,90 +45,83 @@ public class LogDeteksiActivity extends AppCompatActivity {
 
         Log.d(TAG, "Halaman Log Deteksi dibuka.");
 
-        // Inisialisasi tombol navigasi kembali
+        // Inisialisasi Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Setup UI
         setupBackNavigation();
-
-        // Inisialisasi filter chips
         setupFilterChips();
-
-        // Inisialisasi tombol load older logs
         setupLoadOlderLogs();
+        setupRecyclerView();
+
+        // Mulai memantau data Firestore
+        listenToDetectionLogs();
     }
 
-    // ── Navigasi Kembali ────────────────────────────────────────
+    // ── Setup UI ────────────────────────────────────────────────
 
-    /**
-     * Mengatur ikon logo di AppBar sebagai tombol kembali ke Dashboard.
-     */
     private void setupBackNavigation() {
-        // Gunakan logo/app title area sebagai tombol back
         findViewById(R.id.iv_app_logo).setOnClickListener(v -> finish());
         findViewById(R.id.tv_app_title).setOnClickListener(v -> finish());
     }
 
-    // ── Filter Chips ────────────────────────────────────────────
-
-    /**
-     * Mengatur interaksi untuk filter chip:
-     * - TODAY (aktif default)
-     * - THIS WEEK
-     * - HIGH CONFIDENCE
-     *
-     * Saat ini hanya menampilkan Toast karena data masih statis (hardcoded di XML).
-     * Di implementasi penuh, chip ini akan memfilter RecyclerView berdasarkan query.
-     */
     private void setupFilterChips() {
         findViewById(R.id.chip_today).setOnClickListener(v -> {
-            Toast.makeText(this, "Filter: TODAY — Menampilkan log hari ini",
-                    Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Filter chip TODAY dipilih.");
+            Toast.makeText(this, "Filter: TODAY", Toast.LENGTH_SHORT).show();
         });
-
         findViewById(R.id.chip_this_week).setOnClickListener(v -> {
-            Toast.makeText(this, "Filter: THIS WEEK — Menampilkan log minggu ini",
-                    Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Filter chip THIS WEEK dipilih.");
+            Toast.makeText(this, "Filter: THIS WEEK", Toast.LENGTH_SHORT).show();
         });
-
         findViewById(R.id.chip_high_confidence).setOnClickListener(v -> {
-            Toast.makeText(this, "Filter: HIGH CONFIDENCE — Menampilkan log ≥ 85% akurasi",
-                    Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Filter chip HIGH CONFIDENCE dipilih.");
+            Toast.makeText(this, "Filter: HIGH CONFIDENCE", Toast.LENGTH_SHORT).show();
         });
     }
 
-    // ── Load Older Logs ─────────────────────────────────────────
-
-    /**
-     * Mengatur tombol "LOAD OLDER LOGS".
-     * Di implementasi penuh, ini akan melakukan pagination query ke Firestore
-     * menggunakan cursor/startAfter. Saat ini hanya menampilkan Toast.
-     */
     private void setupLoadOlderLogs() {
         findViewById(R.id.btn_load_older_logs).setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "Memuat log lama... (akan terhubung ke Firestore)",
-                    Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Tombol LOAD OLDER LOGS diklik.");
+            Toast.makeText(this, "Memuat log lama...", Toast.LENGTH_SHORT).show();
         });
     }
 
-    // ── Helper: Generate Dummy Data ─────────────────────────────
+    private void setupRecyclerView() {
+        rvDetectionLogs = findViewById(R.id.rv_detection_logs);
+        rvDetectionLogs.setLayoutManager(new LinearLayoutManager(this));
+        
+        logList = new ArrayList<>();
+        logAdapter = new LogAdapter(logList);
+        rvDetectionLogs.setAdapter(logAdapter);
+    }
+
+    // ── Firebase Firestore ───────────────────────────────────────
 
     /**
-     * Menghasilkan data dummy untuk demonstrasi RecyclerView.
-     * Di implementasi penuh, data ini akan berasal dari Firestore real-time query.
-     *
-     * @return list berisi 6 DetectionLog dummy
+     * Memantau koleksi "detection_logs" di Firestore secara real-time.
+     * Mengurutkan berdasarkan timestamp secara menurun (terbaru di atas).
      */
-    private List<DetectionLog> generateDummyData() {
-        List<DetectionLog> logs = new ArrayList<>();
-        logs.add(new DetectionLog("LOG-001", "14:23:05", 98, "Sektor Utara - Blok B"));
-        logs.add(new DetectionLog("LOG-002", "11:05:22", 62, "Sektor Timur - Trail 4"));
-        logs.add(new DetectionLog("LOG-003", "09:14:45", 75, "Perimeter Road South"));
-        logs.add(new DetectionLog("LOG-004", "06:30:12", 91, "Sektor Barat - Zona Konservasi"));
-        logs.add(new DetectionLog("LOG-005", "03:45:33", 44, "Sungai Utama - Checkpoint 2"));
-        logs.add(new DetectionLog("LOG-006", "01:12:08", 88, "Sektor 7G - Habitat Orangutan"));
-        return logs;
+    private void listenToDetectionLogs() {
+        db.collection("detection_logs")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.e(TAG, "Gagal memuat log dari Firestore.", error);
+                        Toast.makeText(this, "Gagal memuat data log.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (value != null) {
+                        logList.clear();
+                        for (QueryDocumentSnapshot doc : value) {
+                            try {
+                                DetectionLog log = doc.toObject(DetectionLog.class);
+                                log.setId(doc.getId());
+                                logList.add(log);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Gagal parsing log: " + doc.getId(), e);
+                            }
+                        }
+                        logAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "Berhasil memuat " + logList.size() + " log dari Firestore.");
+                    }
+                });
     }
 }

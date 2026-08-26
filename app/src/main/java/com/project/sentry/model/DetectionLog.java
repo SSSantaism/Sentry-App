@@ -12,7 +12,6 @@ package com.project.sentry.model;
 public class DetectionLog {
 
     // ── Field ────────────────────────────────────────────────────
-    /** ID unik entri log (bisa berasal dari Firebase document ID). */
     private String id;
 
     /** Waktu deteksi dalam format ISO-8601 atau epoch millis. */
@@ -27,6 +26,9 @@ public class DetectionLog {
     /** Lokasi/zona sensor yang menangkap suara, misal "Sektor Utara - Blok B". */
     private String location;
 
+    /** Tipe anomali suara, misal "CRITICAL_EVENT" atau "NOISE_ANOMALY". */
+    private String type;
+
     // ── Constructor ──────────────────────────────────────────────
 
     /** Constructor kosong — diperlukan oleh Firebase Firestore deserialization. */
@@ -40,12 +42,14 @@ public class DetectionLog {
      * @param timestamp       waktu deteksi
      * @param confidenceLevel tingkat akurasi (0–100)
      * @param location        lokasi/zona sensor
+     * @param type            tipe deteksi (CRITICAL_EVENT atau NOISE_ANOMALY)
      */
-    public DetectionLog(String id, String timestamp, int confidenceLevel, String location) {
+    public DetectionLog(String id, String timestamp, int confidenceLevel, String location, String type) {
         this.id = id;
         this.timestamp = timestamp;
         this.confidenceLevel = confidenceLevel;
         this.location = location;
+        this.type = type;
     }
 
     // ── Getter & Setter ──────────────────────────────────────────
@@ -56,6 +60,14 @@ public class DetectionLog {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getTimestamp() {

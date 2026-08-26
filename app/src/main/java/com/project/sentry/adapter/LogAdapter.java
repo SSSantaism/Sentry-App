@@ -157,8 +157,8 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.LogViewHolder> {
             // Tampilkan badge akurasi (misal "CONF_94%")
             tvAkurasiTembakan.setText(log.getConfidenceLabel());
 
-            // Tentukan gaya tampilan berdasarkan tingkat kepercayaan
-            if (log.isHighConfidence()) {
+            // Tentukan gaya tampilan berdasarkan tipe deteksi
+            if ("CRITICAL_EVENT".equals(log.getType()) || log.isHighConfidence()) {
                 // ── CRITICAL_EVENT ──
                 tvStatusTembakan.setText("CRITICAL_EVENT");
                 tvStatusTembakan.setTextColor(
@@ -172,8 +172,8 @@ public class LogAdapter extends RecyclerView.Adapter<LogAdapter.LogViewHolder> {
                 ivIconDeteksi.setColorFilter(
                         ContextCompat.getColor(itemView.getContext(), R.color.error));
             } else {
-                // ── ACOUSTIC_ANOMALY ──
-                tvStatusTembakan.setText("ACOUSTIC_ANOMALY");
+                // ── NOISE_ANOMALY ──
+                tvStatusTembakan.setText("NOISE_ANOMALY");
                 tvStatusTembakan.setTextColor(
                         ContextCompat.getColor(itemView.getContext(), R.color.on_surface_variant));
                 tvAkurasiTembakan.setTextColor(
